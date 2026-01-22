@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pawinnarut | CaptainPMP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #c084fc;
+            --accent-rust: #f74c00; /* Added Rust Orange */
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #canvas-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 40px auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 50px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* Header */
+        header {
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+
+        .status-badge {
+            background: rgba(247, 76, 0, 0.1); /* Rust color tint */
+            color: var(--accent-rust);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid rgba(247, 76, 0, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Gradient Text for Name */
+        .highlight-name {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.6;
+        }
+
+        .subtitle strong { color: var(--text-primary); }
+
+        /* Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 60px;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            color: var(--accent-cyan);
+            font-family: 'Courier New', monospace; /* Code font for headers */
+            letter-spacing: -0.5px;
+        }
+
+        /* Skills */
+        .skills-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .skill-tag {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .skill-tag.rust { border-color: rgba(247, 76, 0, 0.3); color: #ffab7d; }
+        
+        .skill-tag:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        /* Projects List */
+        .project-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card:hover {
+            border-color: var(--accent-purple);
+            transform: translateX(5px);
+            background: rgba(192, 132, 252, 0.03);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .project-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .project-lang {
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            background: rgba(34, 211, 238, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .project-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .project-link {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .project-link:hover { opacity: 1; color: var(--accent-cyan); }
+
+        /* CTA */
+        .cta-container {
+            margin-top: 50px;
+            display: flex;
+            gap: 20px;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--text-primary);
+            color: var(--bg-color);
+        }
+        .btn-primary:hover {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 25px rgba(34, 211, 238, 0.3);
+        }
+        .btn-outline {
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+        }
+        .btn-outline:hover {
+            border-color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 850px) {
+            .content-grid { grid-template-columns: 1fr; gap: 40px; }
+            h1 { font-size: 2.5rem; }
+            .container { padding: 30px; margin: 20px; width: auto; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-bg"></canvas>
+
+    <div class="container">
+        <header>
+            <div class="status-badge">🚀 Performance Enthusiast</div>
+            <h1>Hi, I'm <span class="highlight-name">Pawinnarut</span>.</h1>
+            <p class="subtitle">
+                Computer Science Student & Systems Developer.<br>
+                Obsessed with <strong>Rust</strong>, <strong>DSA</strong>, and building high-performance applications.
+            </p>
+        </header>
+
+        <div class="content-grid">
+            <div class="column">
+                <section>
+                    <h2>// About Me</h2>
+                    <p>I bridge the gap between complex systems and clean code. My passion lies in <strong>backend optimization</strong> and <strong>low-level programming</strong>.</p>
+                    <p>Currently deep-diving into <span style="color: var(--accent-rust)">Rust</span> and Data Structures to squeeze every bit of efficiency out of my code.</p>
+                </section>
+
+                <section style="margin-top: 40px;">
+                    <h2>// Tech Stack</h2>
+                    <div class="skills-wrapper">
+                        <span class="skill-tag rust">Rust 🦀</span>
+                        <span class="skill-tag">C++ / DSA</span>
+                        <span class="skill-tag">Python</span>
+                        
+                        <span class="skill-tag">TypeScript</span>
+                        <span class="skill-tag">Next.js</span>
+                        <span class="skill-tag">Express / ElysiaJS</span>
+                        <span class="skill-tag">Prisma</span>
+                        <span class="skill-tag">MongoDB</span>
+                        <span class="skill-tag">SQL</span>
+
+                        <span class="skill-tag">Git</span>
+                        <span class="skill-tag">Unity / Godot</span>
+                    </div>
+                </section>
+
+                <section style="margin-top: 40px;">
+                    <h2>// Current Focus</h2>
+                    <ul style="list-style: none; color: var(--text-secondary); line-height: 1.8;">
+                        <li>⚡ Backend Optimization</li>
+                        <li>🧠 Advanced Algorithms</li>
+                        <li>🛠️ Low-level Systems</li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="column">
+                <section>
+                    <h2>// Notable Projects</h2>
+                    
+                    <div class="project-card">
+                        <div class="project-header">
+                            <span class="project-title">Real-time Chat App</span>
+                            <span class="project-lang">JavaScript</span>
+                        </div>
+                        <p class="project-desc">A responsive real-time messaging application built with modern web sockets and clean UI principles.</p>
+                        <a href="https://github.com/CaptainPMP/Real-time-chat-Application" target="_blank" class="project-link">
+                            View Repository →
+                        </a>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="project-header">
+                            <span class="project-title">PyGame: COVID Combat</span>
+                            <span class="project-lang">Python</span>
+                        </div>
+                        <p class="project-desc">An interactive 2D game developed using Pygame themed around combating viruses.</p>
+                        <a href="https://github.com/CaptainPMP/PyGame" target="_blank" class="project-link">
+                            View Repository →
+                        </a>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="project-header">
+                            <span class="project-title">BasicPythonGUI</span>
+                            <span class="project-lang">Python / Tkinter</span>
+                        </div>
+                        <p class="project-desc">A functional desktop GUI for tracking personal income and expenses.</p>
+                        <a href="https://github.com/CaptainPMP/BasicPythonGUI" target="_blank" class="project-link">
+                            View Repository →
+                        </a>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="project-header">
+                            <span class="project-title">StatisticSort</span>
+                            <span class="project-lang">Algorithms</span>
+                        </div>
+                        <p class="project-desc">A JavaScript implementation designed to visualize and perform number sorting efficiently.</p>
+                        <a href="https://github.com/CaptainPMP/statisticSort" target="_blank" class="project-link">
+                            View Repository →
+                        </a>
+                    </div>
+
+                </section>
+            </div>
+        </div>
+
+        <div class="cta-container">
+            <a href="https://github.com/CaptainPMP" target="_blank" class="btn btn-primary">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                @CaptainPMP
+            </a>
+            <a href="#" class="btn btn-outline">Contact Me</a>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        // Config: Darker, more subtle network
+        const particleCount = 70;
+        const connectionDistance = 140;
+        const mouseDistance = 180;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const mouse = { x: null, y: null };
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.size = Math.random() * 1.5 + 0.5;
+                // Randomly choose between Cyan (Tech) or Rust (Performance) color
+                this.color = Math.random() > 0.8 ? 'rgba(247, 76, 0, ' : 'rgba(34, 211, 238, '; 
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                if (mouse.x != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouseDistance) {
+                        const force = (mouseDistance - distance) / mouseDistance;
+                        const directionX = (dx / distance) * force * 0.5;
+                        const directionY = (dy / distance) * force * 0.5;
+                        this.vx += directionX * 0.1;
+                        this.vy += directionY * 0.1;
+                    }
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color + '0.6)';
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        const opacity = 1 - (distance / connectionDistance);
+                        ctx.strokeStyle = 'rgba(255, 255, 255, ' + (opacity * 0.1) + ')';
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+    </script>
+</body>
+</html>
