@@ -260,6 +260,71 @@
                 Computer Science Student & Systems Developer.<br>
                 Obsessed with <strong>Rust</strong>, <strong>DSA</strong>, and building high-performance applications.
             </p>
+            <!-- Meta / Debug (optional) -->
+<section class="project-card" style="margin-top: 25px;">
+    <div class="project-header">
+        <span class="project-title">Active Users</span>
+        <span class="project-lang">{{ users | length }}</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        {% for user in users %}
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 14px;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid var(--glass-border);
+                font-size: 0.85rem;
+            ">
+                <span style="color: var(--text-primary); font-weight: 500;">
+                    {{ user.username }}
+                </span>
+
+                <span style="
+                    color: var(--text-secondary);
+                    font-family: 'Courier New', monospace;
+                    font-size: 0.75rem;
+                ">
+                    {{ user.email }}
+                </span>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+
+<!-- Experience -->
+<section class="project-card" style="margin-top: 30px;">
+    <div class="project-header">
+        <span class="project-title">Proof of Work</span>
+        <span class="project-lang">Experience</span>
+    </div>
+
+    {% for job in jobs %}
+        <div style="margin-bottom: 18px;">
+            <strong style="color: var(--text-primary);">
+                {{ job.position }} @ {{ job.company.name }}
+            </strong>
+
+            <p class="project-desc" style="margin: 6px 0;">
+                {{ job.description }}
+            </p>
+
+            <p style="font-size: 0.75rem; color: var(--text-secondary);">
+                {{ job.start_date }} –
+                {% if job.end_date %}
+                    {{ job.end_date }}
+                {% else %}
+                    Present
+                {% endif %}
+            </p>
+        </div>
+    {% endfor %}
+</section>
+
         </header>
 
         <div class="content-grid">
