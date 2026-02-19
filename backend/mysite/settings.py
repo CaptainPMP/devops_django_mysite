@@ -99,7 +99,8 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT'),
     }
 }
-
+DATABASES['default'] = DATABASES['sqlite3']
+# DATABASES['default'] = DATABASES['postgresql']
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
